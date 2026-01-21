@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="SmartAppointment.API/SmartAppointment.API.csproj" />
+  <Project Path="SmartAppointment.Core/SmartAppointment.Core.csproj" />
+  <Project Path="SmartAppointment.Infrastructure/SmartAppointment.Infrastructure.csproj" />
+</Solution>
