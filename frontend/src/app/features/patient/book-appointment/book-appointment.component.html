@@ -1,0 +1,167 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>📅 Smart Booking</h2>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/patient/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏠</span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/patient/doctors" routerLinkActive="active" class="nav-item">
+        <span class="icon">👨‍⚕️</span>
+        <span>Browse Doctors</span>
+      </a>
+      <a routerLink="/patient/appointments" routerLinkActive="active" class="nav-item">
+        <span class="icon">📋</span>
+        <span>My Appointments</span>
+      </a>
+      <a routerLink="/patient/profile" routerLinkActive="active" class="nav-item">
+        <span class="icon">👤</span>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button routerLink="/login" class="logout-btn">
+        <span class="icon">🚪</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Back Button -->
+    <button (click)="goBack()" class="back-btn">
+      ← Back to Doctors
+    </button>
+
+    <!-- Header -->
+    <header class="page-header">
+      <h1>📅 Book Appointment</h1>
+      <p class="subtitle">Select an available time slot</p>
+    </header>
+
+    <!-- Doctor Info Card -->
+    <section class="doctor-info-card" *ngIf="doctor">
+      <div class="doctor-avatar">
+        <span class="avatar-icon">👨‍⚕️</span>
+      </div>
+      <div class="doctor-details">
+        <h2>Dr. {{ doctor.firstName }} {{ doctor.lastName }}</h2>
+        <p class="specialization">
+          <span class="badge">{{ doctor.specialization }}</span>
+        </p>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="icon">💰</span>
+            <span>₹{{ doctor.consultationFee }} per session</span>
+          </div>
+          <div class="info-item" *ngIf="doctor.experience">
+            <span class="icon">⭐</span>
+            <span>{{ doctor.experience }} years experience</span>
+          </div>
+          <div class="info-item" *ngIf="doctor.qualification">
+            <span class="icon">🎓</span>
+            <span>{{ doctor.qualification }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Messages -->
+    <div class="alert alert-success" *ngIf="successMessage">
+      ✅ {{ successMessage }}
+    </div>
+
+    <div class="alert alert-error" *ngIf="errorMessage">
+      ❌ {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading available slots...</p>
+    </div>
+
+    <!-- No Slots Available -->
+    <div *ngIf="!loading && availableSlots.length === 0" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>No Available Slots</h3>
+      <p>This doctor has no available time slots at the moment.</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        Browse Other Doctors
+      </button>
+    </div>
+
+    <!-- Available Slots -->
+    <section *ngIf="!loading && availableSlots.length > 0" class="slots-section">
+      <h2>Available Time Slots</h2>
+      <p class="slots-subtitle">{{ availableSlots.length }} slot(s) available</p>
+
+      <div class="slots-grid">
+        <div 
+          *ngFor="let slot of availableSlots" 
+          class="slot-card"
+          [class.selected]="selectedSlot?.slotId === slot.slotId"
+          (click)="selectSlot(slot)"
+        >
+          <div class="slot-header">
+            <span class="date-badge">
+              {{ slot.date | date:'EEE, MMM d, y' }}
+            </span>
+          </div>
+          <div class="slot-time">
+            <span class="icon">🕐</span>
+            <span class="time">{{ slot.startTime }} - {{ slot.endTime }}</span>
+          </div>
+          <div class="slot-status">
+            <span class="status-badge status-available">Available</span>
+          </div>
+          <div class="slot-check" *ngIf="selectedSlot?.slotId === slot.slotId">
+            ✓ Selected
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking Summary -->
+    <section *ngIf="selectedSlot && doctor" class="booking-summary">
+      <h3>Booking Summary</h3>
+      <div class="summary-content">
+        <div class="summary-item">
+          <span class="label">Doctor:</span>
+          <span class="value">Dr. {{ doctor.firstName }} {{ doctor.lastName }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Specialization:</span>
+          <span class="value">{{ doctor.specialization }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Date:</span>
+          <span class="value">{{ selectedSlot.date | date:'fullDate' }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Time:</span>
+          <span class="value">{{ selectedSlot.startTime }} - {{ selectedSlot.endTime }}</span>
+        </div>
+        <div class="summary-item total">
+          <span class="label">Consultation Fee:</span>
+          <span class="value">₹{{ doctor.consultationFee }}</span>
+        </div>
+      </div>
+
+      <button 
+        (click)="bookAppointment()" 
+        class="btn btn-primary btn-large"
+        [disabled]="bookingInProgress"
+      >
+        <span *ngIf="!bookingInProgress">Confirm Booking</span>
+        <span *ngIf="bookingInProgress">Booking...</span>
+      </button>
+    </section>
+  </main>
+</div>
