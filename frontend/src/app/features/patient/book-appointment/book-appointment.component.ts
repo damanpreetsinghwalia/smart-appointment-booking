@@ -31,13 +31,13 @@ export class BookAppointmentComponent implements OnInit {
     private slotService: SlotService,
     private appointmentService: AppointmentService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    
+
     this.route.params.subscribe(params => {
-      this.doctorId = +params['doctorId'];
+      this.doctorId = +params['id'];
       if (this.doctorId) {
         this.loadDoctorDetails();
         this.loadAvailableSlots();
@@ -74,7 +74,12 @@ export class BookAppointmentComponent implements OnInit {
   }
 
   selectSlot(slot: any): void {
-    this.selectedSlot = slot;
+    // Toggle: if clicking same slot, deselect it
+    if (this.selectedSlot?.id === slot.id) {
+      this.selectedSlot = null;
+    } else {
+      this.selectedSlot = slot;
+    }
     this.errorMessage = '';
   }
 
@@ -91,8 +96,8 @@ export class BookAppointmentComponent implements OnInit {
     const appointmentData = {
       patientId: this.currentUser.userId,
       doctorId: this.doctorId,
-      slotId: this.selectedSlot.slotId,
-      appointmentDate: this.selectedSlot.date, // Added required field
+      slotId: this.selectedSlot.id,
+      appointmentDate: this.selectedSlot.startTime, // Use startTime as appointment date
       status: 'Scheduled'
     };
 
@@ -100,7 +105,7 @@ export class BookAppointmentComponent implements OnInit {
       next: (response: any) => {
         this.successMessage = 'Appointment booked successfully!';
         this.bookingInProgress = false;
-        
+
         // Redirect to appointments page after 2 seconds
         setTimeout(() => {
           this.router.navigate(['/patient/appointments']);
@@ -108,7 +113,7 @@ export class BookAppointmentComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Booking error:', error);
-        
+
         if (error.error && typeof error.error === 'string') {
           this.errorMessage = error.error;
         } else if (error.error && error.error.message) {
@@ -116,7 +121,7 @@ export class BookAppointmentComponent implements OnInit {
         } else {
           this.errorMessage = 'Failed to book appointment. Please try again.';
         }
-        
+
         this.bookingInProgress = false;
       }
     });

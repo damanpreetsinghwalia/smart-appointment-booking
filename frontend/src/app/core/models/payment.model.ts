@@ -1,24 +1,28 @@
 export interface Payment {
-  id:  number;
+  id: number;
   appointmentId: number;
   amount: number;
   paymentDate: string;
   paymentMethod: string;
-  transactionId: string;
+  transactionId?: string;
   status: PaymentStatus;
+  createdAt?: string;
   appointment?: {
     id: number;
     appointmentDate: string;
     patient?: {
       firstName: string;
       lastName: string;
+      email: string;
     };
     slot?: {
+      startTime: string;
+      endTime: string;
       doctor?: {
-        user?: {
-          firstName: string;
-          lastName: string;
-        };
+        id: number;
+        fullName: string;
+        specialization: string;
+        consultationFee: number;
       };
     };
   };
@@ -35,9 +39,14 @@ export interface CreatePaymentRequest {
   appointmentId: number;
   amount: number;
   paymentMethod: string;
-  transactionId: string;
+  transactionId?: string;
+}
+
+export interface UpdatePaymentStatusRequest {
+  status: PaymentStatus;
+  cancelAppointmentOnFailure?: boolean;
 }
 
 export interface RefundRequest {
-  reason?:  string;
+  reason?: string;
 }

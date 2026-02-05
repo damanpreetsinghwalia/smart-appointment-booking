@@ -1,19 +1,20 @@
 export interface Appointment {
-  id:  number;
+  id: number;
   patientId: string;
   slotId: number;
   appointmentDate: string;
   status: AppointmentStatus;
-  notes?: string;
+  reason?: string;
   slot?: {
     id: number;
     startTime: string;
     endTime: string;
     doctor?: {
       id: number;
+      fullName: string;
       specialization: string;
       consultationFee: number;
-      user?:  {
+      user?: {
         firstName: string;
         lastName: string;
       };
@@ -37,10 +38,10 @@ export interface CreateAppointmentRequest {
   patientId: string;
   slotId: number;
   appointmentDate: string;
-  notes?: string;
+  reason?: string;
 }
 
 export interface UpdateAppointmentRequest {
   status?: AppointmentStatus;
-  notes?: string;
+  reason?: string;
 }

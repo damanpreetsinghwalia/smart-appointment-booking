@@ -1,0 +1,306 @@
+<div class="min-h-screen bg-white">
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-white">
+        <!-- Navigation -->
+        <nav class="container mx-auto px-4 py-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                    <lucide-icon [img]="Calendar" class="w-6 h-6 text-white"></lucide-icon>
+                </div>
+                <span
+                    class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    HealthCare
+                </span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#specialties" class="text-gray-700 hover:text-blue-600 transition-colors">
+                    Specialties
+                </a>
+                <a href="#doctors" class="text-gray-700 hover:text-blue-600 transition-colors">
+                    Doctors
+                </a>
+                <a href="#features" class="text-gray-700 hover:text-blue-600 transition-colors">
+                    Features
+                </a>
+                <button routerLink="/login"
+                    class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow">
+                    Sign In
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Content -->
+        <div class="container mx-auto px-4 py-20 md:py-32">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                        Find & Book
+                        <span class="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Top Doctors
+                        </span>
+                        Near You
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8">
+                        Connect with experienced healthcare professionals and book appointments instantly. Your health
+                        is our priority.
+                    </p>
+
+                    <!-- Search Bar -->
+                    <div class="bg-white rounded-2xl shadow-xl p-2 flex items-center gap-2 max-w-2xl">
+                        <div class="flex-1 flex items-center gap-3 px-4">
+                            <lucide-icon [img]="Search" class="w-5 h-5 text-gray-400"></lucide-icon>
+                            <input type="text" placeholder="Search doctors, specialties..."
+                                class="flex-1 py-3 outline-none text-gray-700" />
+                        </div>
+                        <button
+                            class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-shadow">
+                            Search
+                        </button>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-6 mt-12">
+                        <div>
+                            <div
+                                class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                500+
+                            </div>
+                            <div class="text-gray-600">Doctors</div>
+                        </div>
+                        <div>
+                            <div
+                                class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                50k+
+                            </div>
+                            <div class="text-gray-600">Patients</div>
+                        </div>
+                        <div>
+                            <div
+                                class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                100k+
+                            </div>
+                            <div class="text-gray-600">Appointments</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block">
+                    <img src="https://images.unsplash.com/photo-1666887359800-60e37f543dbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwcHJvZmVzc2lvbmFsJTIwc3RldGhvc2NvcGV8ZW58MXx8fHwxNzcwMDk1ODE0fDA&ixlib=rb-4.1.0&q=80&w=1080"
+                        alt="Healthcare Professional" class="rounded-3xl shadow-2xl" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div
+            class="absolute top-20 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
+        </div>
+        <div
+            class="absolute bottom-20 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
+        </div>
+    </div>
+
+    <!-- Specialties Section -->
+    <section id="specialties" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">
+                    Browse by <span
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Specialty</span>
+                </h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    Find the right specialist for your healthcare needs
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <button *ngFor="let specialty of specialties; let i = index"
+                    class="group p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-300">
+                    <div
+                        [class]="'w-14 h-14 bg-gradient-to-br ' + specialty.color + ' rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform'">
+                        <lucide-icon [img]="iconMap[specialty.iconName]" class="w-7 h-7 text-white"></lucide-icon>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">{{specialty.name}}</h3>
+                    <p class="text-sm text-gray-500">{{specialty.description}}</p>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctors Section -->
+    <section id="doctors" class="py-20 bg-gradient-to-b from-white to-blue-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">
+                    Our <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Top
+                        Doctors</span>
+                </h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    Meet our highly qualified and experienced healthcare professionals
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div *ngFor="let doctor of doctors; let i = index"
+                    class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                    <div class="relative h-72">
+                        <img [src]="doctor.image" [alt]="doctor.name" class="w-full h-full object-cover" />
+                        <div *ngIf="doctor.available"
+                            class="absolute top-4 right-4 px-3 py-1 bg-green-500 text-white text-sm rounded-full">
+                            Available
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-1">{{doctor.name}}</h3>
+                        <p class="text-blue-600 font-medium mb-2">{{doctor.specialty}}</p>
+
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="flex items-center gap-1">
+                                <lucide-icon [img]="Star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></lucide-icon>
+                                <span class="font-semibold">{{doctor.rating}}</span>
+                            </div>
+                            <span class="text-gray-500 text-sm">({{doctor.reviews}} reviews)</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-gray-600 text-sm mb-4">
+                            <lucide-icon [img]="MapPin" class="w-4 h-4"></lucide-icon>
+                            <span>{{doctor.location}}</span>
+                        </div>
+
+                        <div class="text-sm text-gray-500 mb-4">
+                            Experience: {{doctor.experience}}
+                        </div>
+
+                        <button routerLink="/patient/doctors"
+                            class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow flex items-center justify-center gap-2">
+                            <lucide-icon [img]="Calendar" class="w-4 h-4"></lucide-icon>
+                            Book Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">
+                    Why Choose <span
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">HealthCare</span>
+                </h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    We provide the best healthcare booking experience
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div *ngFor="let feature of features; let i = index"
+                    class="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50 hover:shadow-xl transition-shadow duration-300">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <lucide-icon [img]="iconMap[feature.iconName]" class="w-8 h-8 text-white"></lucide-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">{{feature.title}}</h3>
+                    <p class="text-gray-600">{{feature.description}}</p>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="mt-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white">
+                <h3 class="text-3xl font-bold mb-4">Ready to Get Started?</h3>
+                <p class="text-xl mb-8 opacity-90">
+                    Join thousands of patients who trust us with their healthcare needs
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button routerLink="/register"
+                        class="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:shadow-xl transition-shadow">
+                        Book Appointment Now
+                    </button>
+                    <button routerLink="/patient/doctors"
+                        class="px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <lucide-icon [img]="Calendar" class="w-6 h-6 text-white"></lucide-icon>
+                        </div>
+                        <span class="text-xl font-bold text-white">HealthCare</span>
+                    </div>
+                    <p class="text-sm">
+                        Your trusted partner in healthcare. Book appointments with top doctors instantly.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Our Doctors</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Services</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Online Consultation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Emergency Care</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Lab Tests</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Health Packages</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Contact Us</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>Email: info@healthcare.com</li>
+                        <li>Phone: +1 (555) 123-4567</li>
+                        <li>Address: 123 Medical Center Dr.</li>
+                    </ul>
+                    <div class="flex gap-3 mt-4">
+                        <a href="#"
+                            class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <lucide-icon [img]="Facebook" class="w-4 h-4"></lucide-icon>
+                        </a>
+                        <a href="#"
+                            class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <lucide-icon [img]="Twitter" class="w-4 h-4"></lucide-icon>
+                        </a>
+                        <a href="#"
+                            class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <lucide-icon [img]="Instagram" class="w-4 h-4"></lucide-icon>
+                        </a>
+                        <a href="#"
+                            class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+                            <lucide-icon [img]="Linkedin" class="w-4 h-4"></lucide-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-sm text-center">
+                <p>&copy; 2026 HealthCare. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>

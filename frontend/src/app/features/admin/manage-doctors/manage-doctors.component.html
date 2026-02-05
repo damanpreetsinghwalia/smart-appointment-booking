@@ -1,0 +1,183 @@
+<div class="manage-doctors-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🔧 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Manage Doctors</span>
+            </a>
+            <a routerLink="/admin/slots" routerLinkActive="active" class="nav-item">
+                <span class="icon">🕒</span>
+                <span>Manage Slots</span>
+            </a>
+            <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>View Appointments</span>
+            </a>
+            <a routerLink="/admin/payments" routerLinkActive="active" class="nav-item">
+                <span class="icon">💳</span>
+                <span>View Payments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Manage Doctors</h1>
+                <p class="subtitle">Create and manage doctor profiles</p>
+            </div>
+            <button mat-raised-button color="primary" (click)="toggleCreateForm()">
+                <mat-icon>person_add</mat-icon>
+                Add New Doctor
+            </button>
+        </header>
+        <!-- Loading/Error States -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading doctors...</p>
+        </div>
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadDoctors()">Retry</button>
+        </div>
+        <!-- Content -->
+        <div *ngIf="!loading && !error" class="content">
+            <!-- Create/Edit Form -->
+            <mat-card *ngIf="showCreateForm" class="form-card">
+                <mat-card-header>
+                    <mat-card-title>{{ editingDoctor ? 'Edit Doctor' : 'Add New Doctor' }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="doctorForm" (ngSubmit)="editingDoctor ? updateDoctor() : createDoctor()"
+                        class="doctor-form">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Full Name</mat-label>
+                            <input matInput formControlName="fullName" placeholder="Dr. John Doe">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Specialization</mat-label>
+                            <mat-select formControlName="specialization">
+                                <mat-option *ngFor="let spec of specializations" [value]="spec">
+                                    {{ spec }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" formControlName="email" placeholder="doctor@example.com">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Phone Number</mat-label>
+                            <input matInput formControlName="phoneNumber" placeholder="1234567890">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Consultation Fee (₹)</mat-label>
+                            <input matInput type="number" formControlName="consultationFee">
+                        </mat-form-field>
+                        <mat-slide-toggle formControlName="isAvailable">Available</mat-slide-toggle>
+                        <div class="form-actions">
+                            <button mat-raised-button type="button" (click)="cancelEdit()">Cancel</button>
+                            <button mat-raised-button color="primary" type="submit" [disabled]="doctorForm.invalid">
+                                {{ editingDoctor ? 'Update' : 'Create' }} Doctor
+                            </button>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+            <!-- Search and Filter -->
+            <mat-card class="filter-card">
+                <mat-card-content>
+                    <div class="filters">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Search</mat-label>
+                            <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)"
+                                placeholder="Search by name or email">
+                            <mat-icon matSuffix>search</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Filter by Specialization</mat-label>
+                            <mat-select [(value)]="filterSpecialization"
+                                (selectionChange)="onFilterChange($event.value)">
+                                <mat-option [value]="''">All Specializations</mat-option>
+                                <mat-option *ngFor="let spec of specializations" [value]="spec">
+                                    {{ spec }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <!-- Doctors Table -->
+            <mat-card class="table-card">
+                <mat-card-header>
+                    <mat-card-title>Doctors ({{ filteredDoctors.length }})</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div *ngIf="filteredDoctors.length === 0" class="empty-state">
+                        <mat-icon>person_off</mat-icon>
+                        <h3>No doctors found</h3>
+                        <p>Add doctors using the button above.</p>
+                    </div>
+                    <table mat-table [dataSource]="filteredDoctors" *ngIf="filteredDoctors.length > 0"
+                        class="doctors-table">
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef>Name</th>
+                            <td mat-cell *matCellDef="let doctor">{{ doctor.fullName }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="specialization">
+                            <th mat-header-cell *matHeaderCellDef>Specialization</th>
+                            <td mat-cell *matCellDef="let doctor">{{ doctor.specialization }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="email">
+                            <th mat-header-cell *matHeaderCellDef>Email</th>
+                            <td mat-cell *matCellDef="let doctor">{{ doctor.email }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="phone">
+                            <th mat-header-cell *matHeaderCellDef>Phone</th>
+                            <td mat-cell *matCellDef="let doctor">{{ doctor.phoneNumber }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="fee">
+                            <th mat-header-cell *matHeaderCellDef>Fee</th>
+                            <td mat-cell *matCellDef="let doctor">₹{{ doctor.consultationFee }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let doctor">
+                                <span class="status-badge" [class.available]="doctor.isAvailable"
+                                    [class.unavailable]="!doctor.isAvailable">
+                                    {{ doctor.isAvailable ? 'Available' : 'Unavailable' }}
+                                </span>
+                            </td>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let doctor">
+                                <button mat-icon-button color="primary" (click)="editDoctor(doctor)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" (click)="deleteDoctor(doctor)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </main>
+</div>

@@ -4,7 +4,7 @@
     <div class="sidebar-header">
       <h2>📅 Smart Booking</h2>
     </div>
-    
+
     <nav class="sidebar-nav">
       <a routerLink="/patient/dashboard" routerLinkActive="active" class="nav-item">
         <span class="icon">🏠</span>
@@ -14,7 +14,7 @@
         <span class="icon">👨‍⚕️</span>
         <span>Browse Doctors</span>
       </a>
-      <a routerLink="/patient/appointments" routerLinkActive="active" class="nav-item">
+      <a routerLink="/patient/my-appointments" routerLinkActive="active" class="nav-item">
         <span class="icon">📋</span>
         <span>My Appointments</span>
       </a>
@@ -107,7 +107,8 @@
         <div class="stat-content">
           <h3>Next Appointment</h3>
           <p class="stat-text">
-            {{ upcomingAppointments[0]?.slot?.date ? (upcomingAppointments[0].slot.date | date:'shortDate') : 'No upcoming' }}
+            {{ upcomingAppointments[0]?.slot?.date ? (upcomingAppointments[0].slot.date | date:'shortDate') : 'No
+            upcoming' }}
           </p>
         </div>
       </div>

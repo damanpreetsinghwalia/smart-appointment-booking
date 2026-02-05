@@ -1,0 +1,259 @@
+<div class="manage-slots-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🔧 Admin Panel</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Manage Doctors</span>
+            </a>
+            <a routerLink="/admin/slots" routerLinkActive="active" class="nav-item">
+                <span class="icon">🕒</span>
+                <span>Manage Slots</span>
+            </a>
+            <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>View Appointments</span>
+            </a>
+            <a routerLink="/admin/payments" routerLinkActive="active" class="nav-item">
+                <span class="icon">💳</span>
+                <span>View Payments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Manage Time Slots</h1>
+                <p class="subtitle">Create and manage doctor availability slots</p>
+            </div>
+            <div class="header-actions">
+                <button mat-raised-button color="primary" (click)="toggleCreateForm()">
+                    <mat-icon>add</mat-icon>
+                    Create Single Slot
+                </button>
+                <button mat-raised-button color="accent" (click)="toggleBulkCreateForm()">
+                    <mat-icon>add_circle_outline</mat-icon>
+                    Bulk Create Slots
+                </button>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading slots...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadData()">Retry</button>
+        </div>
+
+        <!-- Content -->
+        <div *ngIf="!loading && !error" class="content">
+            <!-- Create Single Slot Form -->
+            <mat-card *ngIf="showCreateForm" class="form-card">
+                <mat-card-header>
+                    <mat-card-title>Create New Slot</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="slotForm" (ngSubmit)="createSlot()" class="slot-form">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Doctor</mat-label>
+                            <mat-select formControlName="doctorId">
+                                <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+                                    {{ doctor.fullName }} - {{ doctor.specialization }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Date</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="date">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Start Time</mat-label>
+                            <input matInput type="time" formControlName="startTime">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>End Time</mat-label>
+                            <input matInput type="time" formControlName="endTime">
+                        </mat-form-field>
+
+                        <mat-slide-toggle formControlName="isAvailable">Available</mat-slide-toggle>
+
+                        <div class="form-actions">
+                            <button mat-raised-button type="button" (click)="toggleCreateForm()">Cancel</button>
+                            <button mat-raised-button color="primary" type="submit" [disabled]="slotForm.invalid">
+                                Create Slot
+                            </button>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Bulk Create Slots Form -->
+            <mat-card *ngIf="showBulkCreateForm" class="form-card">
+                <mat-card-header>
+                    <mat-card-title>Bulk Create Slots</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <form [formGroup]="bulkSlotForm" (ngSubmit)="createBulkSlots()" class="bulk-form">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Doctor</mat-label>
+                            <mat-select formControlName="doctorId">
+                                <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+                                    {{ doctor.fullName }} - {{ doctor.specialization }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <div class="date-range">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Start Date</mat-label>
+                                <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+                                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #startPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>End Date</mat-label>
+                                <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #endPicker></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="time-range">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Daily Start Time</mat-label>
+                                <input matInput type="time" formControlName="startTime">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Daily End Time</mat-label>
+                                <input matInput type="time" formControlName="endTime">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="duration-fields">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Slot Duration (minutes)</mat-label>
+                                <input matInput type="number" formControlName="slotDuration">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Break Between Slots (minutes)</mat-label>
+                                <input matInput type="number" formControlName="breakDuration">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="form-actions">
+                            <button mat-raised-button type="button" (click)="toggleBulkCreateForm()">Cancel</button>
+                            <button mat-raised-button color="accent" type="submit" [disabled]="bulkSlotForm.invalid">
+                                Create Slots
+                            </button>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Filter -->
+            <mat-card class="filter-card">
+                <mat-card-content>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Filter by Doctor</mat-label>
+                        <mat-select [(value)]="selectedDoctorId" (selectionChange)="onDoctorFilterChange($event.value)">
+                            <mat-option [value]="null">All Doctors</mat-option>
+                            <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+                                {{ doctor.fullName }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Slots Table -->
+            <mat-card class="table-card">
+                <mat-card-header>
+                    <mat-card-title>Time Slots ({{ filteredSlots.length }})</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div *ngIf="filteredSlots.length === 0" class="empty-state">
+                        <mat-icon>event_busy</mat-icon>
+                        <h3>No slots found</h3>
+                        <p>Create slots using the buttons above.</p>
+                    </div>
+
+                    <table mat-table [dataSource]="filteredSlots" *ngIf="filteredSlots.length > 0" class="slots-table">
+                        <!-- Doctor Column -->
+                        <ng-container matColumnDef="doctor">
+                            <th mat-header-cell *matHeaderCellDef>Doctor</th>
+                            <td mat-cell *matCellDef="let slot">{{ getDoctorName(slot.doctorId) }}</td>
+                        </ng-container>
+
+                        <!-- Date Column -->
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>Date</th>
+                            <td mat-cell *matCellDef="let slot">{{ formatDate(slot.startTime) }}</td>
+                        </ng-container>
+
+                        <!-- Time Column -->
+                        <ng-container matColumnDef="time">
+                            <th mat-header-cell *matHeaderCellDef>Time</th>
+                            <td mat-cell *matCellDef="let slot">
+                                {{ formatTime(slot.startTime) }} - {{ formatTime(slot.endTime) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Status Column -->
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let slot">
+                                <span class="status-badge" [class.available]="slot.isAvailable"
+                                    [class.unavailable]="!slot.isAvailable">
+                                    {{ slot.isAvailable ? 'Available' : 'Booked' }}
+                                </span>
+                            </td>
+                        </ng-container>
+
+                        <!-- Actions Column -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Actions</th>
+                            <td mat-cell *matCellDef="let slot">
+                                <button mat-icon-button color="warn" (click)="deleteSlot(slot)"
+                                    [disabled]="!slot.isAvailable">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </main>
+</div>

@@ -21,7 +21,7 @@ export class PatientDashboardComponent implements OnInit {
     private authService: AuthService,
     private appointmentService: AppointmentService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUserData();

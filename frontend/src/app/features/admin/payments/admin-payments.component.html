@@ -1,0 +1,217 @@
+<div class="payments-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🔧 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Manage Doctors</span>
+            </a>
+            <a routerLink="/admin/slots" routerLinkActive="active" class="nav-item">
+                <span class="icon">🕒</span>
+                <span>Manage Slots</span>
+            </a>
+            <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>View Appointments</span>
+            </a>
+            <a routerLink="/admin/payments" routerLinkActive="active" class="nav-item">
+                <span class="icon">💳</span>
+                <span>View Payments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Payment Transactions</h1>
+                <p class="subtitle">View and monitor all payment transactions</p>
+            </div>
+        </header>
+
+        <!-- Loading/Error States -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading payments...</p>
+        </div>
+
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadPayments()">Retry</button>
+        </div>
+
+        <!-- Content -->
+        <div *ngIf="!loading && !error" class="content">
+            <!-- Statistics Cards -->
+            <section class="stats-section">
+                <mat-card class="stat-card revenue">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>account_balance_wallet</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>₹{{ totalRevenue.toLocaleString() }}</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card pending">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>hourglass_empty</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ pendingCount }}</h3>
+                            <p>Pending</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card completed">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>check_circle</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ completedCount }}</h3>
+                            <p>Completed</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card failed">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>error</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ failedCount }}</h3>
+                            <p>Failed</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card refunded">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>undo</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ refundedCount }}</h3>
+                            <p>Refunded</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+
+            <!-- Filters -->
+            <mat-card class="filter-card">
+                <mat-card-content>
+                    <div class="filters">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Search</mat-label>
+                            <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)"
+                                placeholder="Search by patient, doctor, or transaction ID">
+                            <mat-icon matSuffix>search</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Filter by Status</mat-label>
+                            <mat-select [(value)]="filterStatus" (selectionChange)="onStatusFilter($event.value)">
+                                <mat-option [value]="''">All Statuses</mat-option>
+                                <mat-option [value]="paymentStatuses.Pending">Pending</mat-option>
+                                <mat-option [value]="paymentStatuses.Completed">Completed</mat-option>
+                                <mat-option [value]="paymentStatuses.Failed">Failed</mat-option>
+                                <mat-option [value]="paymentStatuses.Refunded">Refunded</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <button mat-raised-button (click)="clearFilters()">
+                            <mat-icon>clear</mat-icon>
+                            Clear Filters
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Payments Table -->
+            <mat-card class="table-card">
+                <mat-card-header>
+                    <mat-card-title>Payments ({{ filteredPayments.length }})</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div *ngIf="filteredPayments.length === 0" class="empty-state">
+                        <mat-icon>payment</mat-icon>
+                        <h3>No payments found</h3>
+                        <p>No payments match your current filters.</p>
+                    </div>
+
+                    <table mat-table [dataSource]="filteredPayments" *ngIf="filteredPayments.length > 0"
+                        class="payments-table">
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef>ID</th>
+                            <td mat-cell *matCellDef="let payment">#{{ payment.id }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="patient">
+                            <th mat-header-cell *matHeaderCellDef>Patient</th>
+                            <td mat-cell *matCellDef="let payment">{{ getPatientName(payment) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="doctor">
+                            <th mat-header-cell *matHeaderCellDef>Doctor</th>
+                            <td mat-cell *matCellDef="let payment">{{ getDoctorName(payment) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef>Amount</th>
+                            <td mat-cell *matCellDef="let payment">
+                                <strong>₹{{ payment.amount.toLocaleString() }}</strong>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="method">
+                            <th mat-header-cell *matHeaderCellDef>Method</th>
+                            <td mat-cell *matCellDef="let payment">{{ payment.paymentMethod }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>Date</th>
+                            <td mat-cell *matCellDef="let payment">
+                                {{ formatDate(payment.paymentDate) }}
+                                <br>
+                                <small>{{ formatTime(payment.paymentDate) }}</small>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let payment">
+                                <mat-chip [class]="getStatusClass(payment.status)">
+                                    {{ payment.status }}
+                                </mat-chip>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </main>
+</div>

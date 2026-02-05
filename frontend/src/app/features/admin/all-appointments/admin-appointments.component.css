@@ -1,0 +1,288 @@
+.appointments-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(135deg, #00897b 0%, #00acc1 100%);
+    color: white;
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.sidebar-nav {
+    padding: 24px 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: white;
+}
+
+.nav-item .icon {
+    font-size: 20px;
+}
+
+.nav-item.logout {
+    margin-top: auto;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-item.logout:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff6b6b;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 32px;
+}
+
+.page-header {
+    margin-bottom: 32px;
+}
+
+.header-content h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #718096;
+}
+
+/* Loading/Error */
+.loading-container,
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    gap: 16px;
+}
+
+/* Content */
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Statistics */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+}
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+}
+
+.stat-icon mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.stat-card.total .stat-icon {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.stat-card.scheduled .stat-icon {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.stat-card.confirmed .stat-icon {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.stat-card.completed .stat-icon {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.stat-card.cancelled .stat-icon {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+}
+
+.stat-info p {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Filters */
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    align-items: center;
+}
+
+/* Table */
+.appointments-table {
+    width: 100%;
+}
+
+.appointments-table th {
+    background-color: #f5f7fa;
+    font-weight: 600;
+}
+
+.appointments-table td,
+.appointments-table th {
+    padding: 16px;
+}
+
+.patient-info,
+.doctor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.patient-info .email,
+.doctor-info .specialization {
+    font-size: 12px;
+    color: #718096;
+}
+
+/* Status Chips */
+mat-chip.status-scheduled {
+    background-color: #e3f2fd !important;
+    color: #1976d2 !important;
+}
+
+mat-chip.status-confirmed {
+    background-color: #fff3e0 !important;
+    color: #f57c00 !important;
+}
+
+mat-chip.status-completed {
+    background-color: #e8f5e9 !important;
+    color: #388e3c !important;
+}
+
+mat-chip.status-cancelled {
+    background-color: #ffebee !important;
+    color: #d32f2f !important;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+    gap: 16px;
+}
+
+.empty-state mat-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #cbd5e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,231 @@
+<div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🔧 Admin Panel</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Manage Doctors</span>
+            </a>
+            <a routerLink="/admin/slots" routerLinkActive="active" class="nav-item">
+                <span class="icon">🕒</span>
+                <span>Manage Slots</span>
+            </a>
+            <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>View Appointments</span>
+            </a>
+            <a routerLink="/admin/payments" routerLinkActive="active" class="nav-item">
+                <span class="icon">💳</span>
+                <span>View Payments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Admin Dashboard</h1>
+                <p class="subtitle">System Overview & Management</p>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading dashboard...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadDashboardData()">
+                Retry
+            </button>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div *ngIf="!loading && !error" class="dashboard-content">
+            <!-- Statistics Cards -->
+            <section class="stats-section">
+                <mat-card class="stat-card doctors" (click)="manageDoctors()">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>medical_services</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalDoctors }}</h3>
+                            <p>Total Doctors</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card patients">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>people</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalPatients }}</h3>
+                            <p>Total Patients</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card appointments" (click)="viewAppointments()">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>event</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalAppointments }}</h3>
+                            <p>Total Appointments</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card slots" (click)="manageSlots()">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>schedule</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalSlots }}</h3>
+                            <p>Total Slots</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+
+            <!-- Appointment Status Overview -->
+            <section class="status-overview">
+                <h2>Appointment Status Overview</h2>
+                <div class="status-cards">
+                    <mat-card class="status-card scheduled">
+                        <mat-card-content>
+                            <div class="status-icon">
+                                <mat-icon>event_note</mat-icon>
+                            </div>
+                            <div class="status-info">
+                                <h3>{{ scheduledCount }}</h3>
+                                <p>Scheduled</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-card class="status-card confirmed">
+                        <mat-card-content>
+                            <div class="status-icon">
+                                <mat-icon>check_circle</mat-icon>
+                            </div>
+                            <div class="status-info">
+                                <h3>{{ confirmedCount }}</h3>
+                                <p>Confirmed</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-card class="status-card completed">
+                        <mat-card-content>
+                            <div class="status-icon">
+                                <mat-icon>done_all</mat-icon>
+                            </div>
+                            <div class="status-info">
+                                <h3>{{ completedCount }}</h3>
+                                <p>Completed</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </section>
+
+            <!-- Recent Appointments -->
+            <section class="recent-appointments">
+                <div class="section-header">
+                    <h2>Recent Appointments</h2>
+                    <button mat-raised-button color="primary" (click)="viewAppointments()">
+                        View All
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="recentAppointments.length === 0" class="empty-state">
+                    <mat-icon>event_busy</mat-icon>
+                    <h3>No appointments yet</h3>
+                    <p>Appointments will appear here once patients start booking.</p>
+                </div>
+
+                <!-- Appointments List -->
+                <div *ngIf="recentAppointments.length > 0" class="appointments-list">
+                    <mat-card *ngFor="let appointment of recentAppointments" class="appointment-card">
+                        <mat-card-content>
+                            <div class="appointment-info">
+                                <div class="patient-doctor-info">
+                                    <div class="info-item">
+                                        <mat-icon>person</mat-icon>
+                                        <span><strong>Patient:</strong> {{ getPatientName(appointment) }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <mat-icon>medical_services</mat-icon>
+                                        <span><strong>Doctor:</strong> {{ getDoctorName(appointment) }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-datetime">
+                                    <div class="info-item">
+                                        <mat-icon>calendar_today</mat-icon>
+                                        <span>{{ formatDate(appointment.appointmentDate) }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <mat-icon>access_time</mat-icon>
+                                        <span>{{ formatTime(appointment.slot?.startTime || appointment.appointmentDate)
+                                            }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-status">
+                                    <span class="status-badge" [ngClass]="getStatusClass(appointment.status)">
+                                        {{ appointment.status }}
+                                    </span>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="actions-grid">
+                    <button mat-raised-button color="primary" (click)="manageDoctors()">
+                        <mat-icon>person_add</mat-icon>
+                        Add New Doctor
+                    </button>
+                    <button mat-raised-button color="primary" (click)="manageSlots()">
+                        <mat-icon>add_circle</mat-icon>
+                        Create Time Slots
+                    </button>
+                    <button mat-raised-button color="accent" (click)="viewPayments()">
+                        <mat-icon>payment</mat-icon>
+                        View Payments
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>

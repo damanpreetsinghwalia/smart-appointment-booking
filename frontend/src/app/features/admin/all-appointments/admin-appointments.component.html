@@ -1,0 +1,228 @@
+<div class="appointments-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>🔧 Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Manage Doctors</span>
+            </a>
+            <a routerLink="/admin/slots" routerLinkActive="active" class="nav-item">
+                <span class="icon">🕒</span>
+                <span>Manage Slots</span>
+            </a>
+            <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>View Appointments</span>
+            </a>
+            <a routerLink="/admin/payments" routerLinkActive="active" class="nav-item">
+                <span class="icon">💳</span>
+                <span>View Payments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="header-content">
+                <h1>All Appointments</h1>
+                <p class="subtitle">View and monitor all system appointments</p>
+            </div>
+        </header>
+
+        <!-- Loading/Error States -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading appointments...</p>
+        </div>
+
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadAppointments()">Retry</button>
+        </div>
+
+        <!-- Content -->
+        <div *ngIf="!loading && !error" class="content">
+            <!-- Statistics Cards -->
+            <section class="stats-section">
+                <mat-card class="stat-card total">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>list_alt</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalCount }}</h3>
+                            <p>Total</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card scheduled">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>event_note</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ scheduledCount }}</h3>
+                            <p>Scheduled</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card confirmed">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>check_circle</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ confirmedCount }}</h3>
+                            <p>Confirmed</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card completed">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>done_all</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ completedCount }}</h3>
+                            <p>Completed</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card cancelled">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>cancel</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ cancelledCount }}</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+
+            <!-- Filters -->
+            <mat-card class="filter-card">
+                <mat-card-content>
+                    <div class="filters">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Search</mat-label>
+                            <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)"
+                                placeholder="Search by patient, doctor, or reason">
+                            <mat-icon matSuffix>search</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Filter by Status</mat-label>
+                            <mat-select [(value)]="filterStatus" (selectionChange)="onStatusFilter($event.value)">
+                                <mat-option [value]="''">All Statuses</mat-option>
+                                <mat-option [value]="appointmentStatuses.Scheduled">Scheduled</mat-option>
+                                <mat-option [value]="appointmentStatuses.Confirmed">Confirmed</mat-option>
+                                <mat-option [value]="appointmentStatuses.Completed">Completed</mat-option>
+                                <mat-option [value]="appointmentStatuses.Cancelled">Cancelled</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <button mat-raised-button (click)="clearFilters()">
+                            <mat-icon>clear</mat-icon>
+                            Clear Filters
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Appointments Table -->
+            <mat-card class="table-card">
+                <mat-card-header>
+                    <mat-card-title>Appointments ({{ filteredAppointments.length }})</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <div *ngIf="filteredAppointments.length === 0" class="empty-state">
+                        <mat-icon>event_busy</mat-icon>
+                        <h3>No appointments found</h3>
+                        <p>No appointments match your current filters.</p>
+                    </div>
+
+                    <table mat-table [dataSource]="filteredAppointments" *ngIf="filteredAppointments.length > 0"
+                        class="appointments-table">
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef>ID</th>
+                            <td mat-cell *matCellDef="let appointment">#{{ appointment.id }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="patient">
+                            <th mat-header-cell *matHeaderCellDef>Patient</th>
+                            <td mat-cell *matCellDef="let appointment">
+                                <div class="patient-info">
+                                    <strong>{{ getPatientName(appointment) }}</strong>
+                                    <span class="email">{{ appointment.patient?.email }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="doctor">
+                            <th mat-header-cell *matHeaderCellDef>Doctor</th>
+                            <td mat-cell *matCellDef="let appointment">
+                                <div class="doctor-info">
+                                    <strong>{{ getDoctorName(appointment) }}</strong>
+                                    <span class="specialization">{{ appointment.slot?.doctor?.specialization }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>Date</th>
+                            <td mat-cell *matCellDef="let appointment">{{ formatDate(appointment.appointmentDate) }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="time">
+                            <th mat-header-cell *matHeaderCellDef>Time</th>
+                            <td mat-cell *matCellDef="let appointment">
+                                {{ formatTime(appointment.slot?.startTime || appointment.appointmentDate) }}
+                                -
+                                {{ formatTime(appointment.slot?.endTime || appointment.appointmentDate) }}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let appointment">
+                                <mat-chip [class]="getStatusClass(appointment.status)">
+                                    {{ appointment.status }}
+                                </mat-chip>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="reason">
+                            <th mat-header-cell *matHeaderCellDef>Reason</th>
+                            <td mat-cell *matCellDef="let appointment">
+                                {{ appointment.reason || 'N/A' }}
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </main>
+</div>

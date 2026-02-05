@@ -6,12 +6,9 @@ export interface Slot {
   isAvailable: boolean;
   doctor?: {
     id: number;
+    fullName: string;
     specialization: string;
     consultationFee: number;
-    user?:  {
-      firstName: string;
-      lastName: string;
-    };
   };
 }
 
@@ -19,9 +16,11 @@ export interface CreateSlotRequest {
   doctorId: number;
   startTime: string;
   endTime: string;
+  isAvailable?: boolean;
 }
 
 export interface UpdateSlotRequest {
+  doctorId?: number;
   startTime?: string;
   endTime?: string;
   isAvailable?: boolean;

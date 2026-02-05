@@ -1,0 +1,235 @@
+<div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>📅 Smart Booking</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a routerLink="/doctor/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/doctor/appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>My Appointments</span>
+            </a>
+            <a (click)="logout()" class="nav-item logout">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Doctor Dashboard</h1>
+                <p *ngIf="doctor" class="welcome-text">Welcome back, Dr. {{ doctor.fullName }}!</p>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Loading dashboard...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error && !loading" class="error-container">
+            <mat-icon color="warn">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadDashboardData()">
+                Retry
+            </button>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div *ngIf="!loading && !error" class="dashboard-content">
+            <!-- Statistics Cards -->
+            <section class="stats-section">
+                <mat-card class="stat-card today">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>today</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ todayCount }}</h3>
+                            <p>Today's Appointments</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card upcoming">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>event</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ upcomingCount }}</h3>
+                            <p>Upcoming</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card total-appointments">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>assignment</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalAppointmentsCount }}</h3>
+                            <p>Total Appointments</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card class="stat-card total-slots">
+                    <mat-card-content>
+                        <div class="stat-icon">
+                            <mat-icon>schedule</mat-icon>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ totalSlotsCount }}</h3>
+                            <p>Total Slots</p>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+
+            <!-- Doctor Profile Card -->
+            <section class="profile-section" *ngIf="doctor">
+                <mat-card class="profile-card">
+                    <mat-card-header>
+                        <mat-card-title>Your Profile</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="profile-details">
+                            <div class="profile-item">
+                                <mat-icon>person</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Name</span>
+                                    <span class="value">Dr. {{ doctor.fullName }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-item">
+                                <mat-icon>medical_services</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Specialization</span>
+                                    <span class="value">{{ doctor.specialization }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-item">
+                                <mat-icon>email</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Email</span>
+                                    <span class="value">{{ doctor.email }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-item">
+                                <mat-icon>phone</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Phone</span>
+                                    <span class="value">{{ doctor.phoneNumber }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-item">
+                                <mat-icon>payments</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Consultation Fee</span>
+                                    <span class="value">₹{{ doctor.consultationFee }}</span>
+                                </div>
+                            </div>
+
+                            <div class="profile-item">
+                                <mat-icon>{{ doctor.isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
+                                <div class="profile-text">
+                                    <span class="label">Availability Status</span>
+                                    <span class="value" [class.available]="doctor.isAvailable"
+                                        [class.unavailable]="!doctor.isAvailable">
+                                        {{ doctor.isAvailable ? 'Available' : 'Unavailable' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+
+            <!-- Today's Appointments -->
+            <section class="appointments-section">
+                <div class="section-header">
+                    <h2>Today's Appointments</h2>
+                    <button mat-raised-button color="primary" (click)="viewAllAppointments()">
+                        View All
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="todayAppointments.length === 0" class="empty-state">
+                    <mat-icon>event_available</mat-icon>
+                    <h3>No appointments today</h3>
+                    <p>You have no scheduled appointments for today.</p>
+                </div>
+
+                <!-- Appointments List -->
+                <div *ngIf="todayAppointments.length > 0" class="appointments-list">
+                    <mat-card *ngFor="let appointment of todayAppointments" class="appointment-card">
+                        <mat-card-content>
+                            <div class="appointment-info">
+                                <div class="patient-info">
+                                    <div class="patient-avatar">
+                                        <mat-icon>person</mat-icon>
+                                    </div>
+                                    <div class="patient-details">
+                                        <h4>{{ getPatientName(appointment) }}</h4>
+                                        <p class="patient-email">{{ appointment.patient?.email }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-details">
+                                    <div class="detail-item">
+                                        <mat-icon>access_time</mat-icon>
+                                        <span>
+                                            {{ formatTime(appointment.slot?.startTime || appointment.appointmentDate) }}
+                                            -
+                                            {{ formatTime(appointment.slot?.endTime || appointment.appointmentDate) }}
+                                        </span>
+                                    </div>
+
+                                    <div class="detail-item" *ngIf="appointment.reason">
+                                        <mat-icon>note</mat-icon>
+                                        <span>{{ appointment.reason }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-status">
+                                    <span class="status-badge" [ngClass]="getStatusClass(appointment.status)">
+                                        {{ appointment.status }}
+                                    </span>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="actions-section">
+                <h2>Quick Actions</h2>
+                <div class="actions-grid">
+                    <button mat-raised-button color="primary" (click)="viewAllAppointments()">
+                        <mat-icon>list</mat-icon>
+                        View All Appointments
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>

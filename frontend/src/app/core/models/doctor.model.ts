@@ -1,32 +1,28 @@
 export interface Doctor {
-  id:  number;
-  userId: string;
+  id: number;
+  fullName: string;
   specialization: string;
-  qualification: string;
-  experienceYears: number;
+  email: string;
+  phoneNumber: string;
   consultationFee: number;
-  availabilityStatus: boolean;
-  user?:  {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber?: string;
-  };
+  isAvailable: boolean;
+  createdAt?: string;
 }
 
 export interface CreateDoctorRequest {
-  userId: string;
-  specialization:  string;
-  qualification: string;
-  experienceYears: number;
-  consultationFee:  number;
-  availabilityStatus: boolean;
+  fullName: string;
+  specialization: string;
+  email: string;
+  phoneNumber: string;
+  consultationFee: number;
+  isAvailable: boolean;
 }
 
 export interface UpdateDoctorRequest {
+  fullName?: string;
   specialization?: string;
-  qualification?:  string;
-  experienceYears?: number;
+  email?: string;
+  phoneNumber?: string;
   consultationFee?: number;
-  availabilityStatus?: boolean;
+  isAvailable?: boolean;
 }

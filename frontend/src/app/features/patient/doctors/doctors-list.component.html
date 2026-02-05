@@ -4,7 +4,7 @@
     <div class="sidebar-header">
       <h2>📅 Smart Booking</h2>
     </div>
-    
+
     <nav class="sidebar-nav">
       <a routerLink="/patient/dashboard" routerLinkActive="active" class="nav-item">
         <span class="icon">🏠</span>
@@ -14,7 +14,7 @@
         <span class="icon">👨‍⚕️</span>
         <span>Browse Doctors</span>
       </a>
-      <a routerLink="/patient/appointments" routerLinkActive="active" class="nav-item">
+      <a routerLink="/patient/my-appointments" routerLinkActive="active" class="nav-item">
         <span class="icon">📋</span>
         <span>My Appointments</span>
       </a>
@@ -44,11 +44,7 @@
     <section class="filter-section">
       <div class="filter-group">
         <label for="specialization">Filter by Specialization:</label>
-        <select 
-          id="specialization" 
-          [(ngModel)]="selectedSpecialization"
-          class="filter-select"
-        >
+        <select id="specialization" [(ngModel)]="selectedSpecialization" class="filter-select">
           <option *ngFor="let spec of specializations" [value]="spec">
             {{ spec }}
           </option>
@@ -84,42 +80,31 @@
         <div class="doctor-avatar">
           <span class="avatar-icon">👨‍⚕️</span>
         </div>
-        
+
         <div class="doctor-info">
-          <h3>Dr. {{ doctor.firstName }} {{ doctor.lastName }}</h3>
+          <h3>{{ doctor.fullName }}</h3>
           <p class="specialization">
             <span class="badge">{{ doctor.specialization }}</span>
           </p>
-          
+
           <div class="doctor-details">
             <div class="detail-item">
               <span class="icon">📧</span>
-              <span>{{ doctor.user?.email || 'N/A' }}</span>
+              <span>{{ doctor.email || 'N/A' }}</span>
             </div>
             <div class="detail-item">
               <span class="icon">📞</span>
-              <span>{{ doctor.user?.phoneNumber || 'N/A' }}</span>
+              <span>{{ doctor.phoneNumber || 'N/A' }}</span>
             </div>
             <div class="detail-item">
               <span class="icon">💰</span>
               <span>₹{{ doctor.consultationFee }} per session</span>
             </div>
-            <div class="detail-item" *ngIf="doctor.experience">
-              <span class="icon">⭐</span>
-              <span>{{ doctor.experience }} years experience</span>
-            </div>
-          </div>
-
-          <div class="qualification" *ngIf="doctor.qualification">
-            <strong>Qualification:</strong> {{ doctor.qualification }}
           </div>
         </div>
 
         <div class="doctor-actions">
-          <button 
-            (click)="viewDoctorSlots(doctor.doctorId)" 
-            class="btn btn-primary btn-block"
-          >
+          <button (click)="viewDoctorSlots(doctor.id)" class="btn btn-primary btn-block">
             Book Appointment
           </button>
         </div>

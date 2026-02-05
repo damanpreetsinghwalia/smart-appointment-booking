@@ -1,0 +1,444 @@
+.appointments-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.sidebar-nav {
+    padding: 24px 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-left-color: white;
+}
+
+.nav-item .icon {
+    font-size: 20px;
+}
+
+.nav-item.logout {
+    margin-top: auto;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-item.logout:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff6b6b;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 32px;
+}
+
+/* Header */
+.header {
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 16px;
+    color: #718096;
+}
+
+/* Loading & Error States */
+.loading-container,
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    gap: 16px;
+}
+
+.error-container mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+}
+
+/* Summary Cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.summary-card {
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+}
+
+.summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+}
+
+.summary-icon mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+.summary-card.scheduled .summary-icon {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.summary-card.confirmed .summary-icon {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.summary-card.completed .summary-icon {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.summary-card.cancelled .summary-icon {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.summary-card.total .summary-icon {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.summary-info h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+}
+
+.summary-info p {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Tabs */
+.appointments-tabs {
+    margin-bottom: 24px;
+}
+
+/* Appointments List */
+.appointments-list {
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    gap: 16px;
+    text-align: center;
+}
+
+.empty-state mat-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #bbb;
+}
+
+.empty-state h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+}
+
+/* Appointment Card */
+.appointment-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.appointment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 16px;
+}
+
+.patient-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.patient-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.patient-avatar mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+.patient-details h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.patient-details .patient-email {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Status Chip */
+.status-chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 16px;
+    text-transform: uppercase;
+}
+
+.status-scheduled {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-confirmed {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.status-completed {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.status-cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+/* Appointment Details */
+.appointment-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-item mat-icon {
+    color: #666;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}
+
+.detail-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-text .label {
+    font-size: 12px;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.detail-text .value {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Appointment Actions */
+.appointment-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.appointment-actions button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        margin-left: 220px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .appointment-header {
+        flex-direction: column;
+    }
+
+    .appointment-details {
+        grid-template-columns: 1fr;
+    }
+
+    .appointment-actions {
+        flex-direction: column;
+    }
+
+    .appointment-actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Snackbar Styles */
+::ng-deep .snackbar-success {
+    background-color: #4caf50 !important;
+    color: white !important;
+}
+
+::ng-deep .snackbar-error {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+::ng-deep .snackbar-info {
+    background-color: #2196f3 !important;
+    color: white !important;
+}

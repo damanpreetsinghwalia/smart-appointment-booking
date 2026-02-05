@@ -4,7 +4,7 @@
     <div class="sidebar-header">
       <h2>📅 Smart Booking</h2>
     </div>
-    
+
     <nav class="sidebar-nav">
       <a routerLink="/patient/dashboard" routerLinkActive="active" class="nav-item">
         <span class="icon">🏠</span>
@@ -14,7 +14,7 @@
         <span class="icon">👨‍⚕️</span>
         <span>Browse Doctors</span>
       </a>
-      <a routerLink="/patient/appointments" routerLinkActive="active" class="nav-item">
+      <a routerLink="/patient/my-appointments" routerLinkActive="active" class="nav-item">
         <span class="icon">📋</span>
         <span>My Appointments</span>
       </a>
@@ -51,7 +51,7 @@
         <span class="avatar-icon">👨‍⚕️</span>
       </div>
       <div class="doctor-details">
-        <h2>Dr. {{ doctor.firstName }} {{ doctor.lastName }}</h2>
+        <h2>Dr. {{ doctor.fullName }}</h2>
         <p class="specialization">
           <span class="badge">{{ doctor.specialization }}</span>
         </p>
@@ -103,25 +103,21 @@
       <p class="slots-subtitle">{{ availableSlots.length }} slot(s) available</p>
 
       <div class="slots-grid">
-        <div 
-          *ngFor="let slot of availableSlots" 
-          class="slot-card"
-          [class.selected]="selectedSlot?.slotId === slot.slotId"
-          (click)="selectSlot(slot)"
-        >
+        <div *ngFor="let slot of availableSlots" class="slot-card" [class.selected]="selectedSlot?.id === slot.id"
+          (click)="selectSlot(slot)">
           <div class="slot-header">
             <span class="date-badge">
-              {{ slot.date | date:'EEE, MMM d, y' }}
+              {{ slot.startTime | date:'EEE, MMM d, y' }}
             </span>
           </div>
           <div class="slot-time">
             <span class="icon">🕐</span>
-            <span class="time">{{ slot.startTime }} - {{ slot.endTime }}</span>
+            <span class="time">{{ slot.startTime | date:'shortTime' }} - {{ slot.endTime | date:'shortTime' }}</span>
           </div>
           <div class="slot-status">
             <span class="status-badge status-available">Available</span>
           </div>
-          <div class="slot-check" *ngIf="selectedSlot?.slotId === slot.slotId">
+          <div class="slot-check" *ngIf="selectedSlot?.id === slot.id">
             ✓ Selected
           </div>
         </div>
@@ -134,7 +130,7 @@
       <div class="summary-content">
         <div class="summary-item">
           <span class="label">Doctor:</span>
-          <span class="value">Dr. {{ doctor.firstName }} {{ doctor.lastName }}</span>
+          <span class="value">{{ doctor.fullName }}</span>
         </div>
         <div class="summary-item">
           <span class="label">Specialization:</span>
@@ -142,11 +138,12 @@
         </div>
         <div class="summary-item">
           <span class="label">Date:</span>
-          <span class="value">{{ selectedSlot.date | date:'fullDate' }}</span>
+          <span class="value">{{ selectedSlot.startTime | date:'fullDate' }}</span>
         </div>
         <div class="summary-item">
           <span class="label">Time:</span>
-          <span class="value">{{ selectedSlot.startTime }} - {{ selectedSlot.endTime }}</span>
+          <span class="value">{{ selectedSlot.startTime | date:'shortTime' }} - {{ selectedSlot.endTime |
+            date:'shortTime' }}</span>
         </div>
         <div class="summary-item total">
           <span class="label">Consultation Fee:</span>
@@ -154,11 +151,7 @@
         </div>
       </div>
 
-      <button 
-        (click)="bookAppointment()" 
-        class="btn btn-primary btn-large"
-        [disabled]="bookingInProgress"
-      >
+      <button (click)="bookAppointment()" class="btn btn-primary btn-large" [disabled]="bookingInProgress">
         <span *ngIf="!bookingInProgress">Confirm Booking</span>
         <span *ngIf="bookingInProgress">Booking...</span>
       </button>

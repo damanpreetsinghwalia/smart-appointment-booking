@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { SlotService } from '../../../core/services/slot.service';
 
@@ -23,7 +23,7 @@ export class DoctorsListComponent implements OnInit {
     private doctorService: DoctorService,
     private slotService: SlotService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDoctors();
@@ -57,7 +57,7 @@ export class DoctorsListComponent implements OnInit {
     return this.doctors.filter(d => d.specialization === this.selectedSpecialization);
   }
 
-  viewDoctorSlots(doctorId: number): void {
-    this.router.navigate(['/patient/book-appointment', doctorId]);
+  viewDoctorSlots(id: number): void {
+    this.router.navigate(['/patient/book-appointment', id]);
   }
 }

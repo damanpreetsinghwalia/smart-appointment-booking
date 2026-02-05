@@ -19,7 +19,8 @@ export class RegisterComponent {
 
   roles = [
     { value: 'Patient', label: 'Patient' },
-    { value: 'Doctor', label: 'Doctor' }
+    { value: 'Doctor', label: 'Doctor' },
+    { value: 'Admin', label: 'Admin' }
   ];
 
   passwordRequirements = [
@@ -40,7 +41,7 @@ export class RegisterComponent {
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [
-        Validators.required, 
+        Validators.required,
         Validators.minLength(6),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
       ]],
@@ -53,7 +54,7 @@ export class RegisterComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
@@ -87,18 +88,18 @@ export class RegisterComponent {
 
     console.log('Sending registration data:', registerData);
 
-  this.authService.register(registerData).subscribe({
-    next: (response: any) => {
-      console.log('Registration successful:', response);
-      this.successMessage = 'Registration successful! Redirecting to login...';
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
-    },
-    error: (error: any) => {
-      console.error('Registration error:', error);
-      
-        
+    this.authService.register(registerData).subscribe({
+      next: (response: any) => {
+        console.log('Registration successful:', response);
+        this.successMessage = 'Registration successful! Redirecting to login...';
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      },
+      error: (error: any) => {
+        console.error('Registration error:', error);
+
+
         // Handle different error response formats
         if (error.error) {
           if (typeof error.error === 'string') {
@@ -109,7 +110,7 @@ export class RegisterComponent {
             // Handle validation errors from backend
             const errors = error.error.errors;
             const errorMessages: string[] = [];
-            
+
             Object.keys(errors).forEach(key => {
               if (Array.isArray(errors[key])) {
                 errorMessages.push(...errors[key]);
@@ -117,7 +118,7 @@ export class RegisterComponent {
                 errorMessages.push(errors[key]);
               }
             });
-            
+
             this.errorMessage = errorMessages.join(' ');
           } else if (error.error.title) {
             this.errorMessage = error.error.title;
@@ -129,7 +130,7 @@ export class RegisterComponent {
         } else {
           this.errorMessage = 'Registration failed. Please try again.';
         }
-        
+
         this.loading = false;
       },
       complete: () => {
