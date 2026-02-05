@@ -136,15 +136,13 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Enable Swagger in all environments (including Azure production)
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Smart Appointment Booking API v1");
-        options.RoutePrefix = string. Empty; // Swagger at root URL
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Smart Appointment Booking API v1");
+    options.RoutePrefix = string.Empty; // Swagger at root URL
+});
 
 app.UseHttpsRedirection();
 
