@@ -15,9 +15,10 @@ builder.Services.AddControllers()
     {
         // Handle circular references
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        // Serialize enums as strings (e.g., "Scheduled" instead of 0)
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 // Configure CORS - IMPORTANT!
 builder.Services.AddCors(options =>
@@ -79,22 +80,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Configure CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy. WithOrigins("http://localhost:3000", "http://localhost:5173") // React/Vite
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
-
-builder.Services.AddControllers();
-
 // Configure Swagger with JWT support
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo

@@ -130,6 +130,40 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    [HttpPost("seed-demo-passwords")]
+    public async Task<IActionResult> SeedDemoPasswords()
+    {
+        var demoPassword = "Demo@123";
+        var demoEmails = new List<string>();
+
+        // Collect all demo emails (patient1-10, doctor1-10)
+        for (int i = 1; i <= 10; i++)
+        {
+            demoEmails.Add($"patient{i}@demo.com");
+            demoEmails.Add($"doctor{i}@demo.com");
+        }
+
+        var updated = 0;
+        var errors = new List<string>();
+
+        foreach (var email in demoEmails)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                // Remove existing password and set new one via Identity's hasher
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, demoPassword);
+                if (result.Succeeded)
+                    updated++;
+                else
+                    errors.Add($"{email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+
+        return Ok(new { message = $"Updated {updated} demo user passwords.", errors });
+    }
 }
 
 // DTOs
