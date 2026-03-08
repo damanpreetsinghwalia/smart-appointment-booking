@@ -80,13 +80,13 @@
       <div *ngIf="!loading && upcomingAppointments.length > 0" class="appointments-grid">
         <div *ngFor="let appointment of upcomingAppointments" class="appointment-card">
           <div class="appointment-header">
-            <h3>Dr. {{ appointment.doctor?.firstName }} {{ appointment.doctor?.lastName }}</h3>
+            <h3>{{ appointment.slot?.doctor?.fullName }}</h3>
             <span class="status-badge status-scheduled">{{ appointment.status }}</span>
           </div>
           <div class="appointment-details">
-            <p><strong>Specialization:</strong> {{ appointment.doctor?.specialization }}</p>
-            <p><strong>Date:</strong> {{ appointment.slot?.date | date:'mediumDate' }}</p>
-            <p><strong>Time:</strong> {{ appointment.slot?.startTime }} - {{ appointment.slot?.endTime }}</p>
+            <p><strong>Specialization:</strong> {{ appointment.slot?.doctor?.specialization }}</p>
+            <p><strong>Date:</strong> {{ appointment.slot?.startTime | date:'mediumDate' }}</p>
+            <p><strong>Time:</strong> {{ appointment.slot?.startTime | date:'shortTime' }} - {{ appointment.slot?.endTime | date:'shortTime' }}</p>
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@
         <div class="stat-content">
           <h3>Next Appointment</h3>
           <p class="stat-text">
-            {{ upcomingAppointments[0]?.slot?.date ? (upcomingAppointments[0].slot.date | date:'shortDate') : 'No
+            {{ upcomingAppointments[0]?.slot?.startTime ? (upcomingAppointments[0].slot.startTime | date:'shortDate') : 'No
             upcoming' }}
           </p>
         </div>

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { SlotService } from '../../../core/services/slot.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class BookAppointmentComponent implements OnInit {
   doctorId!: number;
   doctor: any = null;
   availableSlots: any[] = [];
+  allSlots: any[] = [];
   selectedSlot: any = null;
   loading = true;
   bookingInProgress = false;
@@ -24,12 +26,18 @@ export class BookAppointmentComponent implements OnInit {
   successMessage = '';
   currentUser: any;
 
+  // Confirmation state
+  bookingConfirmed = false;
+  bookedAppointment: any = null;
+  bookedPayment: any = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private doctorService: DoctorService,
     private slotService: SlotService,
     private appointmentService: AppointmentService,
+    private paymentService: PaymentService,
     private authService: AuthService
   ) { }
 
@@ -61,7 +69,9 @@ export class BookAppointmentComponent implements OnInit {
     this.loading = true;
     this.slotService.getSlotsByDoctorId(this.doctorId).subscribe({
       next: (slots: any[]) => {
-        // Filter only available slots
+        // Store all slots for display (booked ones shown as disabled)
+        this.allSlots = slots;
+        // Filter only available slots (keep for backward compat)
         this.availableSlots = slots.filter(slot => slot.isAvailable);
         this.loading = false;
       },
@@ -74,6 +84,10 @@ export class BookAppointmentComponent implements OnInit {
   }
 
   selectSlot(slot: any): void {
+    // Only allow selecting available slots
+    if (!slot.isAvailable) {
+      return;
+    }
     // Toggle: if clicking same slot, deselect it
     if (this.selectedSlot?.id === slot.id) {
       this.selectedSlot = null;
@@ -95,21 +109,36 @@ export class BookAppointmentComponent implements OnInit {
 
     const appointmentData = {
       patientId: this.currentUser.userId,
-      doctorId: this.doctorId,
       slotId: this.selectedSlot.id,
-      appointmentDate: this.selectedSlot.startTime, // Use startTime as appointment date
-      status: 'Scheduled'
+      reason: ''
     };
 
     this.appointmentService.createAppointment(appointmentData).subscribe({
       next: (response: any) => {
-        this.successMessage = 'Appointment booked successfully!';
-        this.bookingInProgress = false;
+        this.bookedAppointment = response;
 
-        // Redirect to appointments page after 2 seconds
-        setTimeout(() => {
-          this.router.navigate(['/patient/appointments']);
-        }, 2000);
+        // Create payment record
+        const paymentData = {
+          appointmentId: response.id,
+          amount: this.doctor.consultationFee,
+          paymentMethod: 'Cash'
+        };
+
+        this.paymentService.createPayment(paymentData).subscribe({
+          next: (payment: any) => {
+            this.bookedPayment = payment;
+            this.bookingConfirmed = true;
+            this.bookingInProgress = false;
+            this.successMessage = 'Appointment booked successfully!';
+          },
+          error: (paymentError: any) => {
+            console.error('Payment creation error:', paymentError);
+            // Appointment was created even if payment failed
+            this.bookingConfirmed = true;
+            this.bookingInProgress = false;
+            this.successMessage = 'Appointment booked! Payment will be collected at the clinic.';
+          }
+        });
       },
       error: (error: any) => {
         console.error('Booking error:', error);
@@ -129,5 +158,9 @@ export class BookAppointmentComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/patient/doctors']);
+  }
+
+  viewMyAppointments(): void {
+    this.router.navigate(['/patient/my-appointments']);
   }
 }

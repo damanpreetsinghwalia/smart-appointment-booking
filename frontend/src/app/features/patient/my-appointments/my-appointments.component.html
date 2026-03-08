@@ -1,101 +1,139 @@
-<div class="my-appointments-container">
-    <!-- Header -->
-    <div class="header">
-        <h1>My Appointments</h1>
-        <button mat-raised-button color="primary" routerLink="/patient/doctors">
-            <mat-icon>add</mat-icon>
-            Book New Appointment
-        </button>
-    </div>
-
-    <!-- Loading State -->
-    <div *ngIf="loading" class="loading-container">
-        <mat-spinner></mat-spinner>
-        <p>Loading your appointments...</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="error-container">
-        <mat-icon color="warn">error_outline</mat-icon>
-        <p>{{ error }}</p>
-        <button mat-raised-button color="primary" (click)="loadAppointments()">
-            Retry
-        </button>
-    </div>
-
-    <!-- Content -->
-    <div *ngIf="!loading && !error" class="content">
-        <!-- Summary Cards -->
-        <div class="summary-cards">
-            <mat-card class="summary-card upcoming">
-                <mat-card-content>
-                    <div class="summary-icon">
-                        <mat-icon>event</mat-icon>
-                    </div>
-                    <div class="summary-info">
-                        <h3>{{ getUpcomingCount() }}</h3>
-                        <p>Upcoming</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card class="summary-card completed">
-                <mat-card-content>
-                    <div class="summary-icon">
-                        <mat-icon>check_circle</mat-icon>
-                    </div>
-                    <div class="summary-info">
-                        <h3>{{ getCompletedCount() }}</h3>
-                        <p>Completed</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card class="summary-card cancelled">
-                <mat-card-content>
-                    <div class="summary-icon">
-                        <mat-icon>cancel</mat-icon>
-                    </div>
-                    <div class="summary-info">
-                        <h3>{{ getCancelledCount() }}</h3>
-                        <p>Cancelled</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card class="summary-card total">
-                <mat-card-content>
-                    <div class="summary-icon">
-                        <mat-icon>list_alt</mat-icon>
-                    </div>
-                    <div class="summary-info">
-                        <h3>{{ appointments.length }}</h3>
-                        <p>Total</p>
-                    </div>
-                </mat-card-content>
-            </mat-card>
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>📅 Smart Booking</h2>
         </div>
 
-        <!-- Tabs for filtering -->
-        <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)"
-            class="appointments-tabs">
-            <mat-tab label="All ({{ appointments.length }})">
-                <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
-            </mat-tab>
+        <nav class="sidebar-nav">
+            <a routerLink="/patient/dashboard" routerLinkActive="active" class="nav-item">
+                <span class="icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a routerLink="/patient/doctors" routerLinkActive="active" class="nav-item">
+                <span class="icon">👨‍⚕️</span>
+                <span>Browse Doctors</span>
+            </a>
+            <a routerLink="/patient/my-appointments" routerLinkActive="active" class="nav-item">
+                <span class="icon">📋</span>
+                <span>My Appointments</span>
+            </a>
+            <a routerLink="/patient/profile" routerLinkActive="active" class="nav-item">
+                <span class="icon">👤</span>
+                <span>Profile</span>
+            </a>
+        </nav>
 
-            <mat-tab label="Upcoming ({{ getUpcomingCount() }})">
-                <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
-            </mat-tab>
+        <div class="sidebar-footer">
+            <button routerLink="/login" class="logout-btn">
+                <span class="icon">🚪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
 
-            <mat-tab label="Completed ({{ getCompletedCount() }})">
-                <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
-            </mat-tab>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="my-appointments-container">
+            <!-- Header -->
+            <div class="header">
+                <h1>📋 My Appointments</h1>
+                <button mat-raised-button color="primary" routerLink="/patient/doctors">
+                    <mat-icon>add</mat-icon>
+                    Book New Appointment
+                </button>
+            </div>
 
-            <mat-tab label="Cancelled ({{ getCancelledCount() }})">
-                <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
-            </mat-tab>
-        </mat-tab-group>
-    </div>
+            <!-- Loading State -->
+            <div *ngIf="loading" class="loading-container">
+                <mat-spinner></mat-spinner>
+                <p>Loading your appointments...</p>
+            </div>
+
+            <!-- Error State -->
+            <div *ngIf="error && !loading" class="error-container">
+                <mat-icon color="warn">error_outline</mat-icon>
+                <p>{{ error }}</p>
+                <button mat-raised-button color="primary" (click)="loadAppointments()">
+                    Retry
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div *ngIf="!loading && !error" class="content">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <mat-card class="summary-card upcoming">
+                        <mat-card-content>
+                            <div class="summary-icon">
+                                <mat-icon>event</mat-icon>
+                            </div>
+                            <div class="summary-info">
+                                <h3>{{ getUpcomingCount() }}</h3>
+                                <p>Upcoming</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-card class="summary-card completed">
+                        <mat-card-content>
+                            <div class="summary-icon">
+                                <mat-icon>check_circle</mat-icon>
+                            </div>
+                            <div class="summary-info">
+                                <h3>{{ getCompletedCount() }}</h3>
+                                <p>Completed</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-card class="summary-card cancelled">
+                        <mat-card-content>
+                            <div class="summary-icon">
+                                <mat-icon>cancel</mat-icon>
+                            </div>
+                            <div class="summary-info">
+                                <h3>{{ getCancelledCount() }}</h3>
+                                <p>Cancelled</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-card class="summary-card total">
+                        <mat-card-content>
+                            <div class="summary-icon">
+                                <mat-icon>list_alt</mat-icon>
+                            </div>
+                            <div class="summary-info">
+                                <h3>{{ appointments.length }}</h3>
+                                <p>Total</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+
+                <!-- Tabs for filtering -->
+                <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)"
+                    class="appointments-tabs">
+                    <mat-tab label="All ({{ appointments.length }})">
+                        <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
+                    </mat-tab>
+
+                    <mat-tab label="Upcoming ({{ getUpcomingCount() }})">
+                        <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
+                    </mat-tab>
+
+                    <mat-tab label="Completed ({{ getCompletedCount() }})">
+                        <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
+                    </mat-tab>
+
+                    <mat-tab label="Cancelled ({{ getCancelledCount() }})">
+                        <ng-container *ngTemplateOutlet="appointmentsList"></ng-container>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+    </main>
 </div>
 
 <!-- Appointments List Template -->
@@ -120,7 +158,7 @@
                             <mat-icon>person</mat-icon>
                         </div>
                         <div class="doctor-details">
-                            <h3>Dr. {{ getDoctorName(appointment) }}</h3>
+                            <h3>{{ getDoctorName(appointment) }}</h3>
                             <p class="specialization">{{ getDoctorSpecialization(appointment) }}</p>
                         </div>
                     </div>

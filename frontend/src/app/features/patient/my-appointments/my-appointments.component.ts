@@ -177,8 +177,8 @@ export class MyAppointmentsComponent implements OnInit, OnDestroy {
     getDoctorName(appointment: Appointment): string {
         if (appointment.slot?.doctor) {
             const doctor = appointment.slot.doctor;
-            if (doctor.user) {
-                return `${doctor.user.firstName} ${doctor.user.lastName}`.trim();
+            if (doctor.fullName) {
+                return doctor.fullName;
             }
             return 'Unknown Doctor';
         }

@@ -37,7 +37,7 @@ export enum AppointmentStatus {
 export interface CreateAppointmentRequest {
   patientId: string;
   slotId: number;
-  appointmentDate: string;
+  appointmentDate?: string;
   reason?: string;
 }
 

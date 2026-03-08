@@ -35,18 +35,18 @@
   <!-- Main Content -->
   <main class="main-content">
     <!-- Back Button -->
-    <button (click)="goBack()" class="back-btn">
+    <button (click)="goBack()" class="back-btn" *ngIf="!bookingConfirmed">
       ← Back to Doctors
     </button>
 
     <!-- Header -->
-    <header class="page-header">
+    <header class="page-header" *ngIf="!bookingConfirmed">
       <h1>📅 Book Appointment</h1>
       <p class="subtitle">Select an available time slot</p>
     </header>
 
     <!-- Doctor Info Card -->
-    <section class="doctor-info-card" *ngIf="doctor">
+    <section class="doctor-info-card" *ngIf="doctor && !bookingConfirmed">
       <div class="doctor-avatar">
         <span class="avatar-icon">👨‍⚕️</span>
       </div>
@@ -73,7 +73,7 @@
     </section>
 
     <!-- Messages -->
-    <div class="alert alert-success" *ngIf="successMessage">
+    <div class="alert alert-success" *ngIf="successMessage && !bookingConfirmed">
       ✅ {{ successMessage }}
     </div>
 
@@ -88,7 +88,7 @@
     </div>
 
     <!-- No Slots Available -->
-    <div *ngIf="!loading && availableSlots.length === 0" class="empty-state">
+    <div *ngIf="!loading && allSlots.length === 0 && !bookingConfirmed" class="empty-state">
       <div class="empty-icon">📅</div>
       <h3>No Available Slots</h3>
       <p>This doctor has no available time slots at the moment.</p>
@@ -98,12 +98,14 @@
     </div>
 
     <!-- Available Slots -->
-    <section *ngIf="!loading && availableSlots.length > 0" class="slots-section">
+    <section *ngIf="!loading && allSlots.length > 0 && !bookingConfirmed" class="slots-section">
       <h2>Available Time Slots</h2>
       <p class="slots-subtitle">{{ availableSlots.length }} slot(s) available</p>
 
       <div class="slots-grid">
-        <div *ngFor="let slot of availableSlots" class="slot-card" [class.selected]="selectedSlot?.id === slot.id"
+        <div *ngFor="let slot of allSlots" class="slot-card"
+          [class.selected]="selectedSlot?.id === slot.id"
+          [class.booked]="!slot.isAvailable"
           (click)="selectSlot(slot)">
           <div class="slot-header">
             <span class="date-badge">
@@ -115,7 +117,8 @@
             <span class="time">{{ slot.startTime | date:'shortTime' }} - {{ slot.endTime | date:'shortTime' }}</span>
           </div>
           <div class="slot-status">
-            <span class="status-badge status-available">Available</span>
+            <span *ngIf="slot.isAvailable" class="status-badge status-available">Available</span>
+            <span *ngIf="!slot.isAvailable" class="status-badge status-booked">Booked</span>
           </div>
           <div class="slot-check" *ngIf="selectedSlot?.id === slot.id">
             ✓ Selected
@@ -125,7 +128,7 @@
     </section>
 
     <!-- Booking Summary -->
-    <section *ngIf="selectedSlot && doctor" class="booking-summary">
+    <section *ngIf="selectedSlot && doctor && !bookingConfirmed" class="booking-summary">
       <h3>Booking Summary</h3>
       <div class="summary-content">
         <div class="summary-item">
@@ -155,6 +158,88 @@
         <span *ngIf="!bookingInProgress">Confirm Booking</span>
         <span *ngIf="bookingInProgress">Booking...</span>
       </button>
+    </section>
+
+    <!-- ✅ Confirmation Screen -->
+    <section *ngIf="bookingConfirmed" class="confirmation-section">
+      <div class="confirmation-icon">✅</div>
+      <h2 class="confirmation-title">Appointment Confirmed!</h2>
+      <p class="confirmation-subtitle">Your appointment has been booked successfully.</p>
+
+      <div class="confirmation-card">
+        <h3>Appointment Details</h3>
+        <div class="confirmation-details">
+          <div class="detail-row">
+            <span class="detail-label">Appointment ID:</span>
+            <span class="detail-value">#{{ bookedAppointment?.id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Doctor:</span>
+            <span class="detail-value">Dr. {{ doctor?.fullName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Specialization:</span>
+            <span class="detail-value">{{ doctor?.specialization }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Date:</span>
+            <span class="detail-value">{{ selectedSlot?.startTime | date:'fullDate' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time:</span>
+            <span class="detail-value">{{ selectedSlot?.startTime | date:'shortTime' }} - {{ selectedSlot?.endTime | date:'shortTime' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value status-scheduled">Scheduled</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-card" *ngIf="bookedPayment">
+        <h3>Payment Details</h3>
+        <div class="confirmation-details">
+          <div class="detail-row">
+            <span class="detail-label">Payment ID:</span>
+            <span class="detail-value">#{{ bookedPayment.id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Amount:</span>
+            <span class="detail-value amount">₹{{ bookedPayment.amount }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Method:</span>
+            <span class="detail-value">{{ bookedPayment.paymentMethod }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Payment Status:</span>
+            <span class="detail-value status-pending">{{ bookedPayment.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-card" *ngIf="!bookedPayment">
+        <h3>Payment Details</h3>
+        <div class="confirmation-details">
+          <div class="detail-row">
+            <span class="detail-label">Amount:</span>
+            <span class="detail-value amount">₹{{ doctor?.consultationFee }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Payment Status:</span>
+            <span class="detail-value status-pending">To be collected at clinic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <button (click)="viewMyAppointments()" class="btn btn-primary btn-large">
+          View My Appointments
+        </button>
+        <button (click)="goBack()" class="btn btn-secondary btn-large">
+          Book Another Appointment
+        </button>
+      </div>
     </section>
   </main>
 </div>
